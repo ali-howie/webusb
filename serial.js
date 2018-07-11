@@ -36,14 +36,22 @@ var serial = {};
             return this.device_.selectConfiguration(1);
           }
         })
-        .then(() => this.device_.claimInterface(2))
-        .then(() => this.device_.selectAlternateInterface(2, 0))
-        .then(() => this.device_.controlTransferOut({
-            'requestType': 'class',
-            'recipient': 'interface',
-            'request': 0x22,
-            'value': 0x01,
-            'index': 0x02}))
+        .then(() => this.device_.claimInterface(0))
+        .then(() => this.device_.selectAlternateInterface(0, 0))
+        .then(() => device.controlTransferOut({
+	        requestType: 'vendor',
+	        recipient: 'device',
+	        request: 0x07,
+	        index: 0x00,
+	        value: 0x03 | 0x0100 | 0x0200
+        }))
+	      .then(() => device.controlTransferOut({
+	        requestType: 'vendor',
+	        recipient: 'device',
+	        request: 0x01,
+	        index: 0x00,
+	        value: 0x384000 / 115200
+	      }))
         .then(() => {
           readLoop();
         });
